@@ -18,9 +18,29 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add("js");</script>
 </head>
 
 <body>
+  <noscript>
+    <style>
+      .section-head,
+      .audience article,
+      .principle,
+      .value,
+      .region,
+      .service,
+      .step,
+      .clock,
+      .about-quote,
+      .about-story,
+      .contact-card,
+      .contact-form-wrap {
+        opacity: 1 !important;
+        translate: none !important;
+      }
+    </style>
+  </noscript>
   <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- The bar stays pinned while the page scrolls. Links point at the sections below. -->
@@ -80,7 +100,7 @@
           </article>
         </div>
         <p class="hero-note">A single question is enough to begin. Long retainers are the exception.</p>
-        <ul class="clocks" aria-label="Local time in four regions">
+        <!-- <ul class="clocks" aria-label="Local time in four regions">
           <li class="clock">
             <p class="clock-place">New York</p>
             <time data-zone="America/New_York">--:--</time>
@@ -97,7 +117,7 @@
             <p class="clock-place">Singapore</p>
             <time data-zone="Asia/Singapore">--:--</time>
           </li>
-        </ul>
+        </ul> -->
       </div>
     </section>
 
@@ -233,7 +253,7 @@
 
         <ol class="service-list">
           <li class="service" id="talent" data-audience="employers">
-            <span class="service-index" aria-hidden="true"></span>
+            <span class="service-index" aria-hidden="true">01</span>
             <div class="service-copy">
               <p class="service-for">For employers</p>
               <h3>Talent acquisition</h3>
@@ -246,7 +266,7 @@
             </div>
           </li>
           <li class="service" id="payroll" data-audience="employers">
-            <span class="service-index" aria-hidden="true"></span>
+            <span class="service-index" aria-hidden="true">02</span>
             <div class="service-copy">
               <p class="service-for">For employers</p>
               <h3>Payroll management</h3>
@@ -258,7 +278,7 @@
             </div>
           </li>
           <li class="service" id="organization" data-audience="employers">
-            <span class="service-index" aria-hidden="true"></span>
+            <span class="service-index" aria-hidden="true">03</span>
             <div class="service-copy">
               <p class="service-for">For employers</p>
               <h3>Organizational development</h3>
@@ -270,7 +290,7 @@
             </div>
           </li>
           <li class="service" id="coaching" data-audience="professionals">
-            <span class="service-index" aria-hidden="true"></span>
+            <span class="service-index" aria-hidden="true">04</span>
             <div class="service-copy">
               <p class="service-for">For professionals</p>
               <h3>Career coaching</h3>
@@ -334,7 +354,7 @@
             </div>
             <div>
               <dt>Phone</dt>
-              <dd><a href="tel:+13125550148">+1 312 555 0148</a></dd>
+              <dd><a href="tel:+13125550148">+1 000 000 0000</a></dd>
             </div>
             <div>
               <dt>Email</dt>
@@ -351,7 +371,7 @@
           <noscript>
             <p class="form-note">JavaScript is turned off, so this form cannot check or hold your note. Email <a
                 href="mailto:inquiries@hiringresource.com">inquiries@hiringresource.com</a> or call <a
-                href="tel:+13125550148">+1 312 555 0148</a>.</p>
+                href="tel:+13125550148">+1 000 000 0000</a>.</p>
           </noscript>
 
           <!--
@@ -385,7 +405,7 @@
               <div class="form-field">
                 <label for="phone">Phone <span class="optional">(optional)</span></label>
                 <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30"
-                  aria-describedby="phone-error" placeholder="+1 312 555 0100">
+                  aria-describedby="phone-error" placeholder="+1 000 000 0000">
                 <span class="field-error" id="phone-error"></span>
               </div>
 
@@ -491,7 +511,7 @@
     </div>
   </footer>
 
-  <a class="to-top" href="#top" hidden>Back to top</a>
+  <a class="to-top" href="#top" hidden aria-label="Back to top"><span aria-hidden="true"></span></a>
 
   <script src="script.js"></script>
 </body>

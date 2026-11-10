@@ -221,6 +221,7 @@ ol {
 .logo-mark {
   display: grid;
   place-items: center;
+  transition: background-color 0.2s ease;
   width: 2.4rem;
   height: 2.4rem;
   background: var(--navy);
@@ -637,6 +638,7 @@ ol {
 .region.is-picked {
   background: var(--white);
   border-color: var(--navy);
+  border-top-color: var(--brass);
   box-shadow: 0 14px 32px rgba(14, 76, 122, 0.1);
 }
 
@@ -658,7 +660,6 @@ ol {
 }
 
 /* Services
-   Numbers come from a CSS counter so the order lives in the list itself.
    The visible number is hidden from assistive tech because the list already announces it. */
 
 .services {
@@ -668,7 +669,46 @@ ol {
 .service-list {
   display: grid;
   gap: var(--gap);
-  counter-reset: service;
+}
+
+.service-list.is-single {
+  grid-template-columns: 1fr;
+}
+
+.service-list.is-single .service {
+  max-width: 46rem;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.filter {
+  min-height: 2.55rem;
+  padding: 0.4rem 0.95rem;
+  border: 1px solid #8ebfe0;
+  background: var(--white);
+  color: var(--navy);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.filter.is-on {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: var(--white);
+}
+
+.filter-status {
+  margin: 0 0 1.15rem;
+  color: var(--slate);
+  font-size: 0.92rem;
 }
 
 .service {
@@ -681,11 +721,10 @@ ol {
   background: var(--paper);
   border: 1px solid var(--line);
   border-top: 3px solid var(--brass);
-  counter-increment: service;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
 }
 
-.service-index::before {
-  content: counter(service, decimal-leading-zero);
+.service-index {
   font-family: var(--font);
   font-size: 0.85rem;
   font-weight: 600;
@@ -842,6 +881,7 @@ ol {
   border-radius: 2px;
   background: var(--white);
   color: var(--ink);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .form-field textarea {
@@ -861,6 +901,7 @@ ol {
   outline: 2px solid var(--navy);
   outline-offset: 1px;
   border-color: var(--navy);
+  box-shadow: 0 0 0 4px rgba(26, 115, 184, 0.16);
 }
 
 .form-field input[aria-invalid="true"],
@@ -871,9 +912,23 @@ ol {
 }
 
 .hint {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
   margin-top: 0.35rem;
   color: var(--slate);
   font-size: 0.9rem;
+}
+
+.count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.count.is-near {
+  color: var(--navy);
+  font-weight: 600;
 }
 
 .field-error {
@@ -890,26 +945,37 @@ ol {
 
 .consent {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1.15rem minmax(0, 1fr);
   column-gap: 0.7rem;
-  align-items: start;
+  align-items: center;
 }
 
 .consent input {
-  width: 1.1rem;
-  height: 1.1rem;
-  margin-top: 0.3rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  justify-self: start;
   accent-color: var(--navy);
 }
 
 .consent label {
   margin: 0;
+  min-height: 0;
   font-weight: 400;
   line-height: 1.5;
 }
 
 .consent .field-error {
   grid-column: 2;
+}
+
+.consent input[aria-invalid="true"] {
+  outline: 2px solid var(--danger);
+  outline-offset: 2px;
+  background: transparent;
 }
 
 .form-actions {
@@ -1111,8 +1177,13 @@ ol {
     grid-template-columns: repeat(4, 1fr);
   }
 
-  .regions {
+  .regions,
+  .clocks {
     grid-template-columns: repeat(4, 1fr);
+  }
+
+  .site-nav ul a::after {
+    bottom: -0.2rem;
   }
 
   .contact-grid {
@@ -1127,26 +1198,128 @@ ol {
   }
 }
 
-@media (hover: hover) {
-  .btn-primary:hover {
-    background: var(--navy-mid);
-  }
+.to-top {
+  position: fixed;
+  right: max(1rem, var(--gutter));
+  bottom: 1.15rem;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  background: var(--navy);
+  color: var(--white);
+  text-decoration: none;
+  border-radius: 50%;
+  box-shadow: 0 12px 28px rgba(14, 76, 122, 0.22);
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
 
+.to-top span {
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-top: 0.22rem;
+  border-top: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+
+html.js .section-head,
+html.js .audience article,
+html.js .principle,
+html.js .value,
+html.js .region,
+html.js .service,
+html.js .step,
+html.js .clock,
+html.js .about-quote,
+html.js .about-story,
+html.js .contact-card,
+html.js .contact-form-wrap {
+  opacity: 0;
+  translate: 0 16px;
+  transition: opacity 0.6s ease, translate 0.6s ease, transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+html.js .section-head.is-visible,
+html.js .audience article.is-visible,
+html.js .principle.is-visible,
+html.js .value.is-visible,
+html.js .region.is-visible,
+html.js .service.is-visible,
+html.js .step.is-visible,
+html.js .clock.is-visible,
+html.js .about-quote.is-visible,
+html.js .about-story.is-visible,
+html.js .contact-card.is-visible,
+html.js .contact-form-wrap.is-visible {
+  opacity: 1;
+  translate: 0 0;
+}
+
+@media (hover: hover) {
+  .btn-primary:hover,
   .btn-navy:hover {
     background: var(--navy-mid);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(14, 76, 122, 0.18);
   }
 
   .btn-ghost:hover {
     background: rgba(26, 115, 184, 0.1);
+    transform: translateY(-2px);
   }
 
-  .site-nav ul a:hover,
+  .to-top:hover,
+  .filter:hover {
+    transform: translateY(-2px);
+  }
+
+  .to-top:hover {
+    background: var(--navy-mid);
+    box-shadow: 0 14px 30px rgba(14, 76, 122, 0.28);
+  }
+
+  .filter.is-on:hover {
+    background: var(--navy-mid);
+  }
+
+  .site-nav ul a:hover::after {
+    transform: scaleX(1);
+  }
+
   .site-footer a:hover {
     text-decoration: underline;
     text-underline-offset: 0.22em;
   }
 
-  .service:hover .service-index::before {
+  .logo:hover .logo-mark {
+    background: var(--navy-mid);
+  }
+
+  .principle:hover,
+  .audience article:hover,
+  .value:hover,
+  .step:hover,
+  .region:hover,
+  .service:hover,
+  .clock:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 34px rgba(14, 76, 122, 0.1);
+  }
+
+  .region:hover,
+  .service:hover {
+    background: var(--white);
+  }
+
+  .card-action:hover::after,
+  .audience article:hover .card-action::after,
+  .region:hover .card-action::after {
+    transform: translateX(3px) rotate(45deg);
+  }
+
+  .service:hover .service-index {
     color: var(--brass-deep);
   }
 }
@@ -1174,8 +1347,26 @@ ol {
   .hero-actions,
   .nav-toggle,
   .form-actions,
-  .form-note {
+  .form-note,
+  .to-top,
+  .filters {
     display: none !important;
+  }
+
+  html.js .section-head,
+  html.js .audience article,
+  html.js .principle,
+  html.js .value,
+  html.js .region,
+  html.js .service,
+  html.js .step,
+  html.js .clock,
+  html.js .about-quote,
+  html.js .about-story,
+  html.js .contact-card,
+  html.js .contact-form-wrap {
+    opacity: 1 !important;
+    translate: none !important;
   }
 
   body,

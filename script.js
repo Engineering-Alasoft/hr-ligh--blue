@@ -6,6 +6,12 @@
 (function () {
   "use strict";
 
+  document.documentElement.classList.add("js");
+
+  function prefersReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
   var header = document.getElementById("site-header");
   var toggle = document.querySelector(".nav-toggle");
   var navLinks = document.querySelectorAll(".site-nav ul a");
@@ -59,6 +65,8 @@
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     var link = event.target.closest("a[href^='#']");
     if (!link) return;
+    var filter = link.getAttribute("data-filter");
+    if (filter) applyFilter(filter);
     var id = link.getAttribute("href").slice(1);
     if (!id) return;
     var target = document.getElementById(id);
@@ -70,9 +78,13 @@
     });
   });
 
+  var toTop = document.querySelector(".to-top");
+
   function onScroll() {
     if (window.scrollY > 8) header.classList.add("is-scrolled");
     else header.classList.remove("is-scrolled");
+
+    if (toTop) toTop.hidden = window.scrollY < 700;
 
     var marker = window.scrollY + header.offsetHeight + 80;
     var currentId = "";
@@ -100,6 +112,116 @@
   }, { passive: true });
 
   onScroll();
+
+  /* Live clocks, scroll entrance, service filter, and region handoff. */
+
+  function paintClocks() {
+    var now = new Date();
+    document.querySelectorAll(".clock time[data-zone]").forEach(function (node) {
+      var zone = node.getAttribute("data-zone");
+      try {
+        node.textContent = new Intl.DateTimeFormat("en-GB", {
+          timeZone: zone,
+          hour: "2-digit",
+          minute: "2-digit",
+          hourCycle: "h23"
+        }).format(now);
+        node.setAttribute("datetime", now.toISOString());
+      } catch (error) {
+        node.textContent = "--:--";
+      }
+    });
+  }
+
+  paintClocks();
+  window.setInterval(paintClocks, 1000);
+
+  var revealNodes = document.querySelectorAll(
+    ".section-head, .audience article, .principle, .value, .region, .service, .step, .clock, .about-quote, .about-story, .contact-card, .contact-form-wrap"
+  );
+  var siblingCount = new Map();
+
+  revealNodes.forEach(function (node) {
+    var count = siblingCount.get(node.parentElement) || 0;
+    siblingCount.set(node.parentElement, count + 1);
+    node.style.transitionDelay = Math.min(count, 5) * 70 + "ms";
+  });
+
+  function showReveal(node) {
+    node.classList.add("is-visible");
+  }
+
+  if (prefersReducedMotion() || !("IntersectionObserver" in window)) {
+    revealNodes.forEach(showReveal);
+  } else {
+    var revealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        showReveal(entry.target);
+        revealObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.16, rootMargin: "0px 0px -8% 0px" });
+    revealNodes.forEach(function (node) {
+      revealObserver.observe(node);
+    });
+  }
+
+  var filterButtons = document.querySelectorAll(".filters .filter");
+  var serviceItems = document.querySelectorAll(".service");
+  var serviceList = document.querySelector(".service-list");
+  var filterStatus = document.getElementById("filter-status");
+
+  function applyFilter(name) {
+    var shown = 0;
+    serviceItems.forEach(function (item) {
+      var match = name === "all" || item.getAttribute("data-audience") === name;
+      item.hidden = !match;
+      if (match) {
+        shown += 1;
+        item.classList.add("is-visible");
+      }
+    });
+    filterButtons.forEach(function (button) {
+      var on = button.getAttribute("data-filter") === name;
+      button.classList.toggle("is-on", on);
+      button.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    if (serviceList) serviceList.classList.toggle("is-single", shown === 1);
+    if (filterStatus) {
+      if (name === "employers") filterStatus.textContent = "Three engagements for employers.";
+      else if (name === "professionals") filterStatus.textContent = "Career coaching for professionals.";
+      else filterStatus.textContent = "Four engagements.";
+    }
+    return shown;
+  }
+
+  filterButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      applyFilter(button.getAttribute("data-filter"));
+    });
+  });
+
+  var regionField = document.getElementById("region");
+  document.querySelectorAll("[data-region]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      var value = button.getAttribute("data-region");
+      document.querySelectorAll(".region").forEach(function (card) {
+        card.classList.toggle("is-picked", card.contains(button));
+      });
+      if (regionField) {
+        regionField.value = value;
+        regionField.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      var contact = document.getElementById("contact");
+      if (contact) {
+        contact.scrollIntoView({
+          behavior: prefersReducedMotion() ? "auto" : "smooth",
+          block: "start"
+        });
+        if (regionField) regionField.focus({ preventScroll: true });
+      }
+    });
+  });
 
   /* Inquiry form
      Rules live here so the messages can be specific. The required attributes
@@ -199,9 +321,18 @@
     return Promise.resolve(payload);
   }
 
-  function prefersReducedMotion() {
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var messageField = document.getElementById("message");
+  var messageCount = document.getElementById("message-count");
+
+  function paintCount() {
+    if (!messageField || !messageCount) return;
+    var length = messageField.value.length;
+    messageCount.textContent = length + " / 1500";
+    messageCount.classList.toggle("is-near", length > 1200);
   }
+
+  if (messageField) messageField.addEventListener("input", paintCount);
+  paintCount();
 
   function showSuccess(name) {
     successTitle.textContent = name ? "Thank you, " + name + "." : "Thank you.";
