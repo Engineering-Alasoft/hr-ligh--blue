@@ -67,6 +67,8 @@
     if (!link) return;
     var filter = link.getAttribute("data-filter");
     if (filter) applyFilter(filter);
+    var panel = link.getAttribute("data-panel");
+    if (panel) showPanel(panel);
     var id = link.getAttribute("href").slice(1);
     if (!id) return;
     var target = document.getElementById(id);
@@ -137,7 +139,7 @@
   window.setInterval(paintClocks, 1000);
 
   var revealNodes = document.querySelectorAll(
-    ".section-head, .audience article, .principle, .value, .region, .service, .step, .clock, .about-quote, .about-story, .contact-card, .contact-form-wrap"
+    ".section-head, .benefit, .sheet, .step, .region, .about-quote, .about-story, .value, .faq-item, .contact-card, .contact-form-wrap, .suite-panel"
   );
   var siblingCount = new Map();
 
@@ -166,38 +168,30 @@
     });
   }
 
-  var filterButtons = document.querySelectorAll(".filters .filter");
-  var serviceItems = document.querySelectorAll(".service");
-  var serviceList = document.querySelector(".service-list");
-  var filterStatus = document.getElementById("filter-status");
+  var suiteTabs = document.querySelectorAll(".suite-tab");
+  var suitePanels = document.querySelectorAll(".suite-panel");
 
-  function applyFilter(name) {
-    var shown = 0;
-    serviceItems.forEach(function (item) {
-      var match = name === "all" || item.getAttribute("data-audience") === name;
-      item.hidden = !match;
-      if (match) {
-        shown += 1;
-        item.classList.add("is-visible");
-      }
+  function showPanel(id) {
+    suiteTabs.forEach(function (tab) {
+      var on = tab.getAttribute("data-panel") === id;
+      tab.classList.toggle("is-on", on);
+      tab.setAttribute("aria-selected", on ? "true" : "false");
     });
-    filterButtons.forEach(function (button) {
-      var on = button.getAttribute("data-filter") === name;
-      button.classList.toggle("is-on", on);
-      button.setAttribute("aria-pressed", on ? "true" : "false");
+    suitePanels.forEach(function (panel) {
+      var on = panel.id === id;
+      panel.hidden = !on;
+      if (on) panel.classList.add("is-visible");
     });
-    if (serviceList) serviceList.classList.toggle("is-single", shown === 1);
-    if (filterStatus) {
-      if (name === "employers") filterStatus.textContent = "Three engagements for employers.";
-      else if (name === "professionals") filterStatus.textContent = "Career coaching for professionals.";
-      else filterStatus.textContent = "Four engagements.";
-    }
-    return shown;
   }
 
-  filterButtons.forEach(function (button) {
-    button.addEventListener("click", function () {
-      applyFilter(button.getAttribute("data-filter"));
+  function applyFilter(name) {
+    if (name === "professionals") showPanel("coaching");
+    else showPanel("talent");
+  }
+
+  suiteTabs.forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      showPanel(tab.getAttribute("data-panel"));
     });
   });
 
@@ -219,6 +213,29 @@
           block: "start"
         });
         if (regionField) regionField.focus({ preventScroll: true });
+      }
+    });
+  });
+
+  var topicField = document.getElementById("topic");
+  var audienceField = document.getElementById("audience");
+  document.querySelectorAll("[data-topic]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      if (topicField) {
+        topicField.value = button.getAttribute("data-topic");
+        topicField.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      if (audienceField && button.getAttribute("data-as")) {
+        audienceField.value = button.getAttribute("data-as");
+        audienceField.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      var contact = document.getElementById("contact");
+      if (contact) {
+        contact.scrollIntoView({
+          behavior: prefersReducedMotion() ? "auto" : "smooth",
+          block: "start"
+        });
+        if (topicField) topicField.focus({ preventScroll: true });
       }
     });
   });
@@ -336,7 +353,7 @@
 
   function showSuccess(name) {
     successTitle.textContent = name ? "Thank you, " + name + "." : "Thank you.";
-    successCopy.textContent = "Your note is complete, and it has not been sent. This preview keeps the inquiry in the browser. To reach the firm now, call +1 312 555 0148.";
+    successCopy.textContent = "Your note is complete, and it has not been sent. This preview keeps the inquiry in the browser. To reach the firm now, call +1 000 000 0000.";
     form.hidden = true;
     success.hidden = false;
     success.scrollIntoView({
@@ -388,7 +405,7 @@
       showSuccess(data.name);
     }).catch(function () {
       formError.hidden = false;
-      formError.textContent = "The inquiry could not be recorded. Please call +1 312 555 0148 or email inquiries@hiringresource.com.";
+      formError.textContent = "The inquiry could not be recorded. Please call +1 000 000 0000 or email inquiries@hiringresource.com.";
       formError.focus();
     });
   });
